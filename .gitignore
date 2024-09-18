@@ -1,4 +1,13 @@
-# Ignore all directories containing 'graphs'
-graphs/
-*/graphs/
-*/graphs*/
+__pycache__
+*.png
+*.pyc
+*.nc
+*.dat
+*.mp4
+*.out
+*.gif
+*.x
+*.mod
+*.a
+*.csv
+
