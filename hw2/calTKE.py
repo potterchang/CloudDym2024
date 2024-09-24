@@ -26,9 +26,9 @@ from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 
 #%% Load Functions
 DatasetDir = "/data/yhc2080/VVM/DATA"
-casename = "pbl_ctl"
+casename = "pbl_ctl" #evergreen_qc"
 t0 = 0
-t1 = 720
+t1 = 420
 ntime = int(t1-t0+1)
 nz = 50
 ResultSlicerList = [slice(0,1),np.arange(50),np.arange(128),np.arange(128)]
@@ -198,7 +198,7 @@ starttime = time.time()
 if __name__ == '__main__':    
 
     try:
-        nProc = 10 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
+        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
         with Pool(nProc) as p:
             results=[p.apply_async(calTKEandEns,(casename, itime,)) for itime in range(ntime)]
             from tqdm import tqdm
@@ -210,7 +210,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':    
 
     try:
-        nProc = 10 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
+        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
         with Pool(nProc) as p:
             results=[p.apply_async(calTH,(casename, itime,)) for itime in range(ntime)]
             from tqdm import tqdm
