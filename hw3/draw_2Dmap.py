@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep 18 13:37:55 2024
+Created on Wed Sep 25 18:40:19 2024
 
 @author: yhc2080
 """
-
 
 #%% Initialize
 # Basic
@@ -23,10 +22,12 @@ from multiprocessing import Pool
 # Taiwan VVM
 sys.path.append("/data/yhc2080/UTIL")
 from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
+# Visualization
+import matplotlib.pyplot as plt
 
 #%% Load Functions
 DatasetDir = "/data/yhc2080/VVM/DATA"
-casename = "pbl_ctl" #evergreen_qc"
+casename = "pbl_evergreen_qc"
 t0 = 0
 t1 = 420
 ntime = int(t1-t0+1)
@@ -119,118 +120,77 @@ def centerRegridder(rootgrp, varName, ResultSlicerList,
         OUT = Var_ori_sliced
 
     return OUT
- 
 
-def calTKEandEns(casename, itime):
+def loadData(casename, itime):
     
     VVMLoader = TaiwanVVMData(DatasetDir=DatasetDir, ExampleCasename=casename)    
-    
-    rootgrp = nc.Dataset(f"{DatasetDir}/{casename}/archive/{casename}.L.Dynamic-{str(itime).zfill(6)}.nc")    
-    
-    u = VVMLoader.loadVariable("u", itime, casename, zIdx=np.arange(50), yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
-    v = VVMLoader.loadVariable("v", itime, casename, zIdx=np.arange(50), yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
-    w = VVMLoader.loadVariable("w", itime, casename, zIdx=np.arange(50), yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
-    
-    TKE = np.nanmean(u**2+v**2+w**2, axis=(1,2))
-    
-    eta = centerRegridder(rootgrp, 'eta', ResultSlicerList)
-    zeta = centerRegridder(rootgrp, 'zeta', ResultSlicerList)
-    xi = centerRegridder(rootgrp, 'xi', ResultSlicerList)
-    
-    Enstrophy=np.nanmean(eta**2+zeta**2+xi**2, axis=(0,2,3))
-    
-    return TKE, Enstrophy
+    zc = np.concatenate(([0], np.arange(20, 1940.1, 40)))
+    ind_z = np.argmin(abs(zc-1000))    
 
-def calTH(casename, itime):    
-    VVMLoader = TaiwanVVMData(DatasetDir=DatasetDir, ExampleCasename=casename)              
-    th = VVMLoader.loadVariable("th", itime, casename, zIdx=np.arange(50), yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=False)
-    TH=np.nanmean(th,axis=(1,2))
-    return TH
+    u = VVMLoader.loadVariable("u", itime, casename, zIdx=ind_z, yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
+    v = VVMLoader.loadVariable("v", itime, casename, zIdx=ind_z, yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
+    w = VVMLoader.loadVariable("w", itime, casename, zIdx=ind_z, yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
+ 
+    qv = VVMLoader.loadVariable("qv", itime, casename, zIdx=ind_z, yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
+    th = VVMLoader.loadVariable("th", itime, casename, zIdx=ind_z, yIdx=np.arange(128), xIdx=np.arange(128), TOPOmask=False, regrid=True)
+    PIBAR = VVMLoader.loadFort98('PIBAR')
+    t = th * PIBAR[ind_z]
+    return u, v, w, qv, t
 
-def save_netcdf(TKEs, ENSTROs, THs, save_path, casename, t0, t1):
+#%%
+
+def drawMap2d(casename, itime):
+    toffset = 300
+    tsteplength = 2
+    tminute = toffset + itime * tsteplength
+    HHMM = f"{str(tminute//60).zfill(2)}:{str(tminute%60).zfill(2)}"
+    u, v, w, qv, t = loadData(casename, itime)
+    xc = np.arange(0, 128*200, 200)
+    yc = np.arange(0, 128*200, 200)
     
-    output_folder = f'{save_path}'
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-    filename = f"Turbulence_{casename}-{str(t0).zfill(6)}-{str(t1).zfill(6)}.nc"    
     
-    with nc.Dataset(f"{output_folder}/{filename}", 'w') as ds:
-        # Create dimensions
-        if 'time' not in ds.dimensions:
-            ds.createDimension('time', None)  # Unlimited dimension for time
-        if 'z' not in ds.dimensions:
-            ds.createDimension('z', TKEs.shape[1])
+    fig, ax = plt.subplots(1,2, figsize=[10,5] , sharex=True,sharey=True, dpi=300)
+    ax[0].set_aspect(1)
+    ax[1].set_aspect(1)
+    
+    CF1=ax[0].contourf(xc, yc, t, cmap='turbo', levels=np.arange(293.0, 294.51, 0.1), extend='both')
+    plt.colorbar(CF1, label='T [K]', orientation='horizontal', extend='both')
+    CT=ax[0].contour(xc, yc, qv*1000, levels=np.arange(0, 21.1, 3), colors="w", linewidths=0.8)
+    plt.clabel(CT, fontsize=8)
+    
+    xygap = 5
+    QV=ax[1].quiver(xc[::xygap], yc[::xygap], u[::xygap,::xygap], v[::xygap,::xygap], color="k", scale=15,zorder=10)
+    ax[1].quiverkey(QV, 1.02, 1.00, 1.0, "\n1.0"+"\nm/s",angle=90, color="k",
+                 labelpos = "E", labelcolor="k", fontproperties={'size':8.5}, zorder = 20)
+    CF2=ax[1].contourf(xc, yc, w, cmap='turbo', levels=np.arange(-0.5, 0.51, 0.1), extend='both',zorder=5)
+    plt.colorbar(CF2, label='w [m/s]', orientation='horizontal', extend='both')
+    
+    ax[0].set_title(f"                                        {casename}      {HHMM}"+"\nT (shade); QV (contour, 3g/kg interval)", loc="left")
+    ax[1].set_title(f"\nW (shade); U, V (vector)", loc="left")
+    ax[0].set_xticks(np.arange(0,25600.1, 6400))
+    ax[0].set_yticks(np.arange(0,25600.1, 6400))
+    
+    foldername = f"map2d/{casename}"
+    os.makedirs(foldername, exist_ok=True)
+    imgname = f"map2d-{casename}-{str(itime).zfill(6)}.png"
+    plt.savefig(f"{foldername}/{imgname}", bbox_inches="tight")
+    return imgname
 
-        # Create variables
-        time_var = ds.createVariable('time', 'i4', ('time'))
-        z_var = ds.createVariable('zc', 'i4', ('z'))
-        TKE_var = ds.createVariable('tke', 'f4', ('time', 'z'),
-                                       compression='zlib', complevel=8)
-        ENS_var = ds.createVariable('enstrophy', 'f4', ('time', 'z'),
-                                       compression='zlib', complevel=8)
-        TH_var = ds.createVariable('th', 'f4', ('time', 'z'),
-                                       compression='zlib', complevel=8)
-
-        # Set attributes
-        time_var.setncatts({'name':'time','unit':'output timestep'})
-        z_var.setncatts({'name': "vertical height of model layers, MSL",'unit':'m'})
-        TKE_var.setncatts({'name':'turbulent kinetic energy', 'unit':'m2 s-2'})
-        ENS_var.setncatts({'name':'enstrophy', 'unit':'s-2'})        
-        TH_var.setncatts({'name':'potential temperature', 'unit':'K'})  
-
-        # Store data
-        time_var[:] = np.arange(721)
-        z_var[:] = np.concatenate(([0], np.arange(20, 1940.1, 40)))
-        TKE_var[:] = TKEs
-        ENS_var[:] = ENSTROs
-        TH_var[:] = THs
-
-        
-        # Global attribute
-        ds.setncatts({'comment': "domain averaged vertical structure"})
-       
-    return filename
-
-#%% Main
-
+#%%
 starttime = time.time()
-
-if __name__ == '__main__':    
-
-    try:
-        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
-        with Pool(nProc) as p:
-            results=[p.apply_async(calTKEandEns,(casename, itime,)) for itime in range(ntime)]
-            from tqdm import tqdm
-            fin = [result.get() for result in tqdm(results)]
-    except:
-        print("Finish all")
+if __name__ == '__main__':
+    
+    for casename in ["pbl_ctl", "pbl_evergreen_qc", "pbl_evergreen"]:
+        try:
+            nProc = int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
+            with Pool(nProc) as p:
+                results = [p.apply_async(drawMap2d, 
+                    (casename, itime, )) for itime in range(t0,t1+1,1)]
+                from tqdm import tqdm
+                fin = [result.get() for result in tqdm(results)]
+        except Exception as e:
+            print("An error occurred:", e)
+        print("finish", casename)
         print(f"Elapsed: {time.time()-starttime} sec.")
 
-if __name__ == '__main__':    
-
-    try:
-        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
-        with Pool(nProc) as p:
-            results=[p.apply_async(calTH,(casename, itime,)) for itime in range(ntime)]
-            from tqdm import tqdm
-            fin2 = [result.get() for result in tqdm(results)]
-    except:
-        print("Finish all")
-        print(f"Elapsed: {time.time()-starttime} sec.")
-
-TKEs = np.full([ntime, nz], np.nan) 
-ENSTROs = np.full([ntime, nz], np.nan) 
-THs = np.full([ntime, nz], np.nan) 
-
-for itime in range(ntime):
-
-    TKEs[itime] = fin[itime][0]
-    ENSTROs[itime] = fin[itime][1]
-    THs[itime] = fin2[itime]
-
-save_path = "../DATA"
-filename = save_netcdf(TKEs, ENSTROs, THs, save_path, casename, t0, t1)
-print("Done")
-print(f"Elapsed: {time.time()-starttime} sec.")
-
+print("Done Everything.")
