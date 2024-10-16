@@ -26,7 +26,7 @@ from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 
 #%% Load Functions
 DatasetDir = "/data/yhc2080/VVM/DATA"
-casename = "pbl_ctl" #evergreen_qc"
+casename = "pbl_tracer" #evergreen_qc"
 t0 = 0
 t1 = 420
 ntime = int(t1-t0+1)

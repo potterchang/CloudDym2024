@@ -1,8 +1,9 @@
 'reinit '
 'set grads off'
-casename=pbl_half_PU_2
+casename=pbl_up
 * open control file
-'open ../VVM/DATA/'casename'/gs_ctl_files/topo.ctl'
+'open /data/mlcloud/d11229002/VVM/'casename'/gs_ctl_files/topo.ctl'
+* 'open ../VVM/DATA/'casename'/gs_ctl_files/topo.ctl'
 * set region and time
 'set x 1 128'
 'set y 1 128'

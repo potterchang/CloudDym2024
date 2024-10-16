@@ -26,7 +26,7 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib.lines import Line2D
 #%% Load Data
 DatasetDir = "../DATA"
-casename = "pbl_evergreen"
+casename = "pbl_tracer" #evergreen"
 filename = f"Turbulence_{casename}-000000-000420.nc"
 
 ds = xr.open_dataset(f"{DatasetDir}/{filename}")
