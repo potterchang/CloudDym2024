@@ -26,7 +26,7 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib.lines import Line2D
 #%% Load Data
 DatasetDir = "../DATA"
-casename = "pbl_half_PU_1" #evergreen"
+casename = "pbl_half_PU_uarea_2" #evergreen"
 filename = f"Turbulence_{casename}-000000-000720.nc"
 filename2 = f"EddyFlux_{casename}-000000-000720.nc"
 

@@ -25,11 +25,11 @@ sys.path.append("/data/yhc2080/UTIL")
 from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 
 #%% Load Functions
-DatasetDir = "/data/mlcloud/d11229002/VVM/DATA"
-casename="pbl_up"
+#DatasetDir = "/data/mlcloud/d11229002/VVM/DATA"
+#casename="pbl_up"
 
-#DatasetDir = "/data/yhc2080/VVM/DATA"
-#casename = "pbl_half_PU_1" #evergreen_qc"
+DatasetDir = "/data/yhc2080/VVM/DATA"
+casename = "pbl_half_PU_uarea_2" #evergreen_qc"
 t0 = 0
 t1 = 720
 ntime = int(t1-t0+1)

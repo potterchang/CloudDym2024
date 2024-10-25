@@ -32,7 +32,7 @@ from matplotlib.lines import Line2D
 
 #%% Load Data
 DatasetDir = "../DATA"
-casename = "pbl_up" #evergreen"
+casename = "pbl_half_PU_uarea_2" #evergreen"
 filename = f"Energy_{casename}-000000-000720.nc"
 
 t0 = 60

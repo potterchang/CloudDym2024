@@ -25,11 +25,11 @@ sys.path.append("/data/yhc2080/UTIL")
 from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 
 #%% Load Functions
-DatasetDir = "/data/mlcloud/d11229002/VVM/DATA"
-casename = "pbl_up"
+#DatasetDir = "/data/mlcloud/d11229002/VVM/DATA"
+#casename = "pbl_up"
 
-#DatasetDir = "/data/yhc2080/VVM/DATA"
-#casename = "pbl_half_PU_2" #evergreen_qc"
+DatasetDir = "/data/yhc2080/VVM/DATA"
+casename = "pbl_half_PU_uarea_1" #evergreen_qc"
 t0 = 0
 t1 = 720
 ntime = int(t1-t0+1)
@@ -214,7 +214,7 @@ starttime = time.time()
 if __name__ == '__main__':    
 
     try:
-        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
+        nProc = 10 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
         with Pool(nProc) as p:
             results=[p.apply_async(calTKEandEns,(casename, itime,)) for itime in range(ntime)]
             from tqdm import tqdm
@@ -226,7 +226,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':    
 
     try:
-        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
+        nProc = 10 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
         with Pool(nProc) as p:
             results=[p.apply_async(calTH,(casename, itime,)) for itime in range(ntime)]
             from tqdm import tqdm
