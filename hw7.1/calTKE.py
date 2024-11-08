@@ -29,7 +29,7 @@ from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 #casename = "pbl_up"
 
 DatasetDir = "/data/yhc2080/VVM/DATA"
-casename = "pbl_half_PU_uarea_1" #evergreen_qc"
+casename = "pbl_half_PU_uarea_2" #evergreen_qc"
 t0 = 0
 t1 = 720
 ntime = int(t1-t0+1)
@@ -138,7 +138,8 @@ def calTKEandEns(casename, itime):
     TKE_full = u**2+v**2+w**2
     TKE1 = np.nanmean(TKE_full[:,:,0:64], axis=(1,2))
     TKE2 = np.nanmean(TKE_full[:,:,64:128], axis=(1,2))
-    TKE = np.stack([TKE1, TKE2], axis=1)
+    TKE3 = np.nanmean(TKE_full[:,:,:],axis=(1,2))
+    TKE = np.stack([TKE1, TKE2, TKE3], axis=1)
     #TKE = np.nanmean(u**2+v**2+w**2, axis=(1,2))
     
     eta = centerRegridder(rootgrp, 'eta', ResultSlicerList)
@@ -148,7 +149,8 @@ def calTKEandEns(casename, itime):
     Enstrophy_full = eta**2+zeta**2+xi**2
     Enstrophy1 = np.nanmean(Enstrophy_full[:,:,:,0:64], axis=(0,2,3))
     Enstrophy2 = np.nanmean(Enstrophy_full[:,:,:,64:128], axis=(0,2,3))
-    Enstrophy = np.stack([Enstrophy1, Enstrophy2], axis=1)
+    Enstrophy3 = np.nanmean(Enstrophy_full[:,:,:,:], axis=(0,2,3))
+    Enstrophy = np.stack([Enstrophy1, Enstrophy2, Enstrophy3], axis=1)
     
     return TKE, Enstrophy
 
@@ -158,7 +160,8 @@ def calTH(casename, itime):
     
     TH1=np.nanmean(th[:,:,0:64], axis=(1,2))
     TH2=np.nanmean(th[:,:,64:128],axis=(1,2))
-    TH=np.stack([TH1,TH2], axis=1)
+    TH3=np.nanmean(th[:,:,:],axis=(1,2))
+    TH=np.stack([TH1,TH2,TH3], axis=1)
     return TH
 
 def save_netcdf(TKEs, ENSTROs, THs, save_path, casename, t0, t1):
@@ -175,7 +178,7 @@ def save_netcdf(TKEs, ENSTROs, THs, save_path, casename, t0, t1):
         if 'z' not in ds.dimensions:
             ds.createDimension('z', TKEs.shape[1])
         if 'x' not in ds.dimensions:
-            ds.createDimension('x', 2)
+            ds.createDimension('x', 3)
 
         # Create variables
         time_var = ds.createVariable('time', 'i4', ('time'))
@@ -203,8 +206,7 @@ def save_netcdf(TKEs, ENSTROs, THs, save_path, casename, t0, t1):
 
         
         # Global attribute
-        ds.setncatts({'comment': "domain averaged vertical structure"})
-       
+        ds.setncatts({'comment': "domain averaged vertical structure: 3 averaged vertical structure: region 1 (x=1-64), region 2 (x=65-128), full domain"}) 
     return filename
 
 #%% Main
@@ -235,9 +237,9 @@ if __name__ == '__main__':
         print("Finish all")
         print(f"Elapsed: {time.time()-starttime} sec.")
 
-TKEs = np.full([ntime, nz, 2], np.nan) 
-ENSTROs = np.full([ntime, nz, 2], np.nan) 
-THs = np.full([ntime, nz, 2], np.nan) 
+TKEs = np.full([ntime, nz, 3], np.nan) 
+ENSTROs = np.full([ntime, nz, 3], np.nan) 
+THs = np.full([ntime, nz, 3], np.nan) 
 
 for itime in range(ntime):
 

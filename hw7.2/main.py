@@ -75,12 +75,12 @@ dplot = dataPlotters(expname, figpath, data_domain, data_domain_units)
 #         change the title_left and title_right,
 #         change figname for output file name.
 fig, ax, cax = dplot.draw_zt(data = data_zt2d, \
-                             levels = np.arange(-0.04,0.041,0.01), \
+                             levels = np.arange(-0.06,0.061,0.01), \
                              extend = 'both', \
                              pblh_dicts=pblh_dicts,\
                              title_left  = r"Vertical $\theta$ transport", \
                              title_right = f'{loc_list[xIdx]}', \
-                             figname     = f'Wth-{expname}-{loc_list[xIdx]}.png',\
+                             figname     = f'Wth2-{expname}-{loc_list[xIdx]}.png',\
                       )
 
 #plt.show()

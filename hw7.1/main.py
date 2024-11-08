@@ -8,7 +8,7 @@ from vvmtools import VVMTools
 
 # TODO 2: change the expname to your experiment name
 # prepare expname and data coordinate
-expname  = 'pbl_half_PU_uarea_1'
+expname  = 'pbl_half_PU_uarea_2'
 nx = 128; x = np.arange(nx)*0.2
 ny = 128; y = np.arange(ny)*0.2
 nz = 50;  z = np.arange(nz)*0.04
@@ -23,8 +23,8 @@ filename2 = f"EddyFlux_{expname}-000000-000720.nc"
 
 t0 = 0
 t1 = 721
-xIdx= 1
-loc_list = ["Pasture","Urban"]
+xIdx= 2
+loc_list = ["Pasture","Urban", "Full Domain"]
 
 vtls = VVMTools(case_path=f"/data/yhc2080/VVM/DATA/{expname}")
 
@@ -80,5 +80,5 @@ fig, ax, cax = dplot.draw_zt(data = data_zt2d, \
                              figname     = f'Wth-{expname}-{loc_list[xIdx]}.png',\
                       )
 
-plt.show()
+#plt.show()
 

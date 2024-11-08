@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Wed Sep 18 13:37:55 2024
@@ -29,11 +29,11 @@ from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 #casename = "pbl_up"
 
 
-#DatasetDir = "/data/yhc2080/VVM/DATA"
-#casename = "pbl_half_PU_uarea_1" #evergreen_qc"
+DatasetDir = "/data/yhc2080/VVM/DATA"
+casename = "pbl_half_PU_uarea_1" #evergreen_qc"
 
-DatasetDir = "/data/chung0823/VVM_cloud_dynamics_2024/DATA"
-casename = "pbl_hetero_dthdz_8"
+#DatasetDir = "/data/chung0823/VVM_cloud_dynamics_2024/DATA"
+#casename = "pbl_hetero_dthdz_8"
 
 
 t0 = 0
