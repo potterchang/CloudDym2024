@@ -29,12 +29,13 @@ from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 #casename = "pbl_up"
 
 
-DatasetDir = "/data/yhc2080/VVM/DATA"
-casename = "pbl_half_PU_uarea_1" #evergreen_qc"
+#DatasetDir = "/data/yhc2080/VVM/DATA"
+#casename = "pbl_half_PU_uarea_1" #evergreen_qc"
 
 #DatasetDir = "/data/chung0823/VVM_cloud_dynamics_2024/DATA"
 #casename = "pbl_hetero_dthdz_8"
-
+DatasetDir = "/data/yhc2080/VVM/DATA"
+casename = 'pbl_PU_s1'
 
 t0 = 0
 t1 = 720

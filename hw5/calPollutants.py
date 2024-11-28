@@ -29,7 +29,7 @@ from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 #casename="pbl_up"
 
 DatasetDir = "/data/yhc2080/VVM/DATA"
-casename = "pbl_half_PU_uarea_2" #evergreen_qc"
+casename = "pbl_PU_s1" #evergreen_qc"
 t0 = 0
 t1 = 720
 ntime = int(t1-t0+1)
@@ -106,7 +106,7 @@ starttime = time.time()
 if __name__ == '__main__':    
 
     try:
-        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
+        nProc = 10 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
         with Pool(nProc) as p:
             results=[p.apply_async(calPollutants,(casename, itime, varlist,)) for itime in range(t0, t1+1)]
             from tqdm import tqdm

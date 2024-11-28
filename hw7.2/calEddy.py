@@ -28,11 +28,11 @@ from TaiwanVVMLoader import TaiwanVVMTOPO, TaiwanVVMData
 #DatasetDir = "/data/mlcloud/d11229002/VVM/DATA"
 #casename = "pbl_up"
 
-#DatasetDir = "/data/yhc2080/VVM/DATA"
-#casename = "pbl_half_PU_uarea_1" #evergreen_qc"
+DatasetDir = "/data/yhc2080/VVM/DATA"
+casename = 'pbl_PU_s1' #"pbl_half_PU_uarea_1" #evergreen_qc"
 
-DatasetDir = "/data/chung0823/VVM_cloud_dynamics_2024/DATA"
-casename = "pbl_hetero_dthdz_8"
+#DatasetDir = "/data/chung0823/VVM_cloud_dynamics_2024/DATA"
+#casename = "pbl_hetero_dthdz_8"
 
 t0 = 0
 t1 = 720
@@ -198,7 +198,7 @@ starttime = time.time()
 if __name__ == '__main__':    
 
     try:
-        nProc = 5 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
+        nProc = 10 #int(os.environ.get('SLURM_CPUS_PER_TASK', multiprocessing.cpu_count()/12)) # core to use
         with Pool(nProc) as p:
             results=[p.apply_async(calEddyFlux,(casename, itime,)) for itime in range(ntime)]
             from tqdm import tqdm
